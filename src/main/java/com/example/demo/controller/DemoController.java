@@ -47,7 +47,7 @@ public class DemoController {
     @PostMapping("/decrypt")
     public ResponseEntity<Resource> decryptFile(@RequestParam("file") MultipartFile file, @RequestParam("encryptionKey") String encryptionKey) throws IOException {
         try {
-            byte[] encryptedContent = file.getBytes(); // Utilisez getBytes() pour obtenir les données du fichier
+            byte[] encryptedContent = file.getBytes(); 
             byte[] decryptedContent = symmetricEncryption.decrypt(encryptedContent, encryptionKey);
             ByteArrayResource resource = new ByteArrayResource(decryptedContent);
 

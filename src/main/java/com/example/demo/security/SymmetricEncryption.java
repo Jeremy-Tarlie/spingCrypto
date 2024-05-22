@@ -15,7 +15,7 @@ public class SymmetricEncryption {
 
     public String generateEncryptionKey() throws Exception {
         KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM);
-        keyGen.init(256); // You can use 128 or 192 bits
+        keyGen.init(256); 
         SecretKey secretKey = keyGen.generateKey();
         return Base64.getEncoder().encodeToString(secretKey.getEncoded());
     }
