@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Encryption</title>
+</head>
+<body>
+    <h2>Encrypt File</h2>
+    <form id="encryptForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".txt, .doc, .docx, .pdf" />
+        <button type="submit">Encrypt</button>
+    </form>
+
+    <h2>Decrypt File</h2>
+    <form id="decryptForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".txt, .doc, .docx, .pdf" />
+        <input type="text" id="encryptionKey" name="encryptionKey" placeholder="Enter Encryption Key" required />
+        <button type="submit">Decrypt</button>
+    </form>
+
+    <script>
+        document.getElementById('encryptForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const fileInput = form.querySelector('input[type="file"]');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/api/encryption/encrypt', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Encryption Key: ' + data.encryptionKey);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = 'data:application/octet-stream;base64,' + data.encryptedContent;
+                downloadLink.download = data.originalFilename;
+                downloadLink.click();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('decryptForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const form = event.target;
+            const fileInput = form.querySelector('input[type="file"]');
+            const encryptionKeyInput = form.querySelector('input[name="encryptionKey"]');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('encryptionKey', encryptionKeyInput.value);
+
+            fetch('/api/encryption/decrypt', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = url;
+                downloadLink.download = fileInput.files[0].name;
+                downloadLink.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
